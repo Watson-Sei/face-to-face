@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api:/usr/src/app
+    command: air ./cmd/main.go -b 0.0.0.0
+  db:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./front:/usr/src/app
+    command: npm run dev
+
+volumes:
+  postgres-db:
+    
