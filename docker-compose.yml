@@ -32,7 +32,7 @@ services:
       - "3001:3000"
     volumes:
       - ./front:/usr/src/app
-    command: npm run dev
+    command: yarn dev
 
 volumes:
   postgres-db:
