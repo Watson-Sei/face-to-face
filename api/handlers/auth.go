@@ -10,6 +10,7 @@ import (
 
 	"github.com/Watson-Sei/face-to-face/database"
 	"github.com/Watson-Sei/face-to-face/models"
+	"github.com/Watson-Sei/face-to-face/utils"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -81,23 +82,56 @@ func GetToken(c echo.Context) error {
 
 	fmt.Print(data.AccessToken)
 
-	err = database.DB.Db.Where("email = ?", "seinabehack@gmail.com").First(&models.User{}).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		userInfo, err := getUserInfo(data.AccessToken)
-		if err != nil {
-			return err
-		}
+	// err = database.DB.Db.Where("email = ?", "seinabehack@gmail.com").First(&models.User{}).Error
+	// if errors.Is(err, gorm.ErrRecordNotFound) {
+	// 	userInfo, err := getUserInfo(data.AccessToken)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	if err := database.DB.Db.Create(&models.User{
+	// 		Name:  userInfo.Name,
+	// 		Email: userInfo.Email,
+	// 		Role:  "guest",
+	// 	}).Error; err != nil {
+	// 		return err
+	// 	}
+	// }
+
+	userInfo, err := getUserInfo(data.AccessToken)
+	if err != nil {
+		return err
+	}
+	var user models.User
+	if err := database.DB.Db.Where("email = ?", userInfo.Email).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		fmt.Print("not found")
 		if err := database.DB.Db.Create(&models.User{
 			Name:  userInfo.Name,
 			Email: userInfo.Email,
+			Role:  "guest",
+		}).Error; err != nil {
+			return err
+		}
+		if err := database.DB.Db.Where("email = ?", userInfo.Email).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+			return err
+		}
+	} else {
+		fmt.Print("found")
+		if err := database.DB.Db.Model(&user).Updates(&models.User{
+			Name: userInfo.Name,
 		}).Error; err != nil {
 			return err
 		}
 	}
 
-	// JWT Tokenの発行↓
+	// Generate Token
+	token, err := utils.GenerateJWT(user.Email, user.Role)
+	if err != nil {
+		return err
+	}
 
-	return c.JSON(http.StatusOK, "hello world")
+	return c.JSON(http.StatusOK, map[string]string{
+		"token": token,
+	})
 }
 
 // get userinfo from google
