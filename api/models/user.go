@@ -17,8 +17,9 @@ type User struct {
 	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }
 
-// Example
+// Example User
 // "name": "Watson Sei"
 // "email": "seinabehack@gmail.com"
 // "age": 18
+// "roles": "guest" or "staff" or "owner"
 // "birthday": "2002-12-31T00:00:00+00:00"

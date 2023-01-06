@@ -2,10 +2,16 @@ package main
 
 import (
 	"github.com/Watson-Sei/face-to-face/handlers"
+	"github.com/Watson-Sei/face-to-face/middleware"
 	"github.com/labstack/echo/v4"
 )
 
 func setupRoutes(app *echo.Echo) {
+	// guest level middleware
+	app.GET("/api/guest/check", handlers.Check, middleware.JwtMiddleware("guest"))
+	app.GET("/api/staff/check", handlers.Check, middleware.JwtMiddleware("staff"))
+	app.GET("/api/owner/check", handlers.Check, middleware.JwtMiddleware("owner"))
+
 	auth := app.Group("/api/auth")
 	auth.POST("/token", handlers.GetToken)
 

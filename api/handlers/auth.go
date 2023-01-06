@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/Watson-Sei/face-to-face/database"
 	"github.com/Watson-Sei/face-to-face/models"
@@ -36,6 +37,11 @@ type ResponseUserInfo struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	Id    string `json:"id"`
+}
+
+type ResponseServiceToken struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 // google oauth2.0 -> create account & update account -> generate token
@@ -80,30 +86,12 @@ func GetToken(c echo.Context) error {
 		return err
 	}
 
-	fmt.Print(data.AccessToken)
-
-	// err = database.DB.Db.Where("email = ?", "seinabehack@gmail.com").First(&models.User{}).Error
-	// if errors.Is(err, gorm.ErrRecordNotFound) {
-	// 	userInfo, err := getUserInfo(data.AccessToken)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	if err := database.DB.Db.Create(&models.User{
-	// 		Name:  userInfo.Name,
-	// 		Email: userInfo.Email,
-	// 		Role:  "guest",
-	// 	}).Error; err != nil {
-	// 		return err
-	// 	}
-	// }
-
 	userInfo, err := getUserInfo(data.AccessToken)
 	if err != nil {
 		return err
 	}
 	var user models.User
 	if err := database.DB.Db.Where("email = ?", userInfo.Email).First(&user).Error; errors.Is(err, gorm.ErrRecordNotFound) {
-		fmt.Print("not found")
 		if err := database.DB.Db.Create(&models.User{
 			Name:  userInfo.Name,
 			Email: userInfo.Email,
@@ -115,23 +103,33 @@ func GetToken(c echo.Context) error {
 			return err
 		}
 	} else {
-		fmt.Print("found")
 		if err := database.DB.Db.Model(&user).Updates(&models.User{
-			Name: userInfo.Name,
+			Name:  userInfo.Name,
+			Email: userInfo.Email,
 		}).Error; err != nil {
 			return err
 		}
 	}
 
 	// Generate Token
-	token, err := utils.GenerateJWT(user.Email, user.Role)
+	token, err := utils.GenerateJWT(strconv.Itoa(int(user.ID)), user.Role)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{
-		"token": token,
+	return c.JSON(http.StatusOK, ResponseServiceToken{
+		AccessToken: token,
 	})
+}
+
+// 検証用ハンドラー
+func Check(c echo.Context) error {
+	claims, ok := c.Get("jwt").(utils.Claims)
+	if !ok {
+		return fmt.Errorf("invalid claims type")
+	}
+
+	return c.JSON(http.StatusOK, claims.UserID)
 }
 
 // get userinfo from google
