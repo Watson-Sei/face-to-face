@@ -10,7 +10,6 @@ export default function useRequireLogin(role: string) {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 
     useEffect(() => {
-        console.log(accessToken)
         if (accessToken) {
             // トークンの有効性を確認する
             const headers = {
@@ -34,7 +33,7 @@ export default function useRequireLogin(role: string) {
         } else {
             router.push('/login')
         }
-    }, [accessToken, router, setAccessToken])
+    }, [accessToken, role, router, setAccessToken])
 
     return {
         loading,
