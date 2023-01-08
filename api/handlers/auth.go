@@ -123,13 +123,8 @@ func GetToken(c echo.Context) error {
 }
 
 // 検証用ハンドラー
-func Check(c echo.Context) error {
-	claims, ok := c.Get("jwt").(utils.Claims)
-	if !ok {
-		return fmt.Errorf("invalid claims type")
-	}
-
-	return c.JSON(http.StatusOK, claims.UserID)
+func Veirfy(c echo.Context) error {
+	return c.NoContent(http.StatusNoContent)
 }
 
 // get userinfo from google

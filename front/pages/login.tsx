@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { accessTokenState } from '../states/user';
 
 export default function Login() {
 
     const router = useRouter();
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 
     useEffect(() => {
         if (router.query.code) {
@@ -22,9 +25,11 @@ export default function Login() {
             .then(res => res.json())
             .then(data => {
                 console.log(data)
+                setAccessToken(data.access_token)
+                router.push('/')
             })
         }
-    }, [router])
+    }, [router, setAccessToken])
 
     const handleSignIn = () => {
         const scope = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';

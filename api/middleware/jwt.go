@@ -33,26 +33,3 @@ func JwtMiddleware(role string) echo.MiddlewareFunc {
 		}
 	}
 }
-
-// func JwtMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-// 	return func(c echo.Context) error {
-// 		// JWTを取得する処理
-// 		authorization := c.Request().Header.Get("Authorization")
-// 		token := strings.TrimPrefix(authorization, "Bearer ")
-
-// 		// デコードする
-// 		claims, err := utils.DecodeJWT(token)
-// 		if err != nil {
-// 			return err
-// 		}
-
-// 		// 検証
-// 		if err := utils.VerifyJWT(claims); err != nil {
-// 			return err
-// 		}
-
-// 		c.Set("jwt", claims)
-
-// 		return next(c)
-// 	}
-// }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 
 	"github.com/Watson-Sei/face-to-face/database"
 	"github.com/labstack/echo/v4"
@@ -13,9 +14,9 @@ func main() {
 	app := echo.New()
 
 	app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		Skipper:      middleware.DefaultSkipper,
 		AllowOrigins: []string{"*"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
-		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
 	app.Use(middleware.Logger())
 	app.Use(middleware.Recover())
