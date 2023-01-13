@@ -25,10 +25,10 @@ func GetUser(c echo.Context) error {
 	var user models.User
 	if err := database.DB.Db.Where("id = ? AND deleted_at IS NULL", c.Param("id")).First(&user).Error; err != nil {
 		if gorm.ErrRecordNotFound == err {
-			return c.JSON(http.StatusNotFound, errors.New("User not found"))
+			return c.JSON(http.StatusNotFound, errors.New("user not found"))
 		} else {
 			log.Println(err)
-			return c.JSON(http.StatusInternalServerError, errors.New("Internal server error"))
+			return c.JSON(http.StatusInternalServerError, errors.New("internal server error"))
 		}
 	}
 	return c.JSON(200, user)

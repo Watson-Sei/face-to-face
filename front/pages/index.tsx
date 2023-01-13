@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import useRequireLogin from "../hooks/useRequireLogin"
 import bg_top from '../assets/lp/bg-top.svg';
 import bg_pilot from '../assets/lp/bg-pilot.svg';
