@@ -9,6 +9,7 @@ export default function Layout(props: { children: React.ReactNode }) {
             <Navbar
                 fluid={true}
                 rounded={true}
+                className="pr-[1.5rem] pl-[1.5rem]"
             >
                 <Navbar.Brand href="/">
                     <img src={logo.src} className="mr-3 h-6 sm:h-9"alt="Flowbite Logo"/>
