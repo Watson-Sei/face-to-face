@@ -16,7 +16,7 @@ export default function useRequireLogin(role: string) {
                 'Authorization': `Bearer ${accessToken}`
             }
             
-            fetch(`http://localhost:3000/api/${role}/check`, {headers})
+            fetch(`http://localhost:3000/api/auth/${role}/check`, {headers})
             .then(res => {
                 if (res.ok) {
                     setLoading(false)

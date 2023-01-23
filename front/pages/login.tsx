@@ -15,7 +15,7 @@ export default function Login() {
         if (router.query.code) {
             const code = router.query.code;
             // バックエンドにリクエストを送る
-            fetch(`http://localhost:3000/api/auth/token`, {
+            fetch(`http://localhost:3000/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -26,7 +26,6 @@ export default function Login() {
             })
             .then(res => res.json())
             .then(data => {
-                console.log(data)
                 setAccessToken(data.access_token)
                 router.push('/service')
             })
